@@ -7,10 +7,17 @@ export class UsersController {
   constructor(private readonly userService: UsersService) { }
 
   @Post('')
-  async triggerEvent(
+  async loginUser(
     @Body('name') name: string,
   ) {
-    await this.userService.login(name);
-    return { status: 'User logined!' };
+    const user = await this.userService.login(name);
+    return { user };
+  }
+  @Post('search')
+  async searchUsers(
+    @Body('name') name: string,
+  ) {
+    const users = await this.userService.search(name);
+    return { users };
   }
 }

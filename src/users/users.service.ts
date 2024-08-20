@@ -10,8 +10,15 @@ export class UsersService {
   public users: any[] = []
 
   login(name: string) {
-    const user = { name, id: idGenerator(), createdDate: new Date().toString() }
+    const user = { name, id: idGenerator(), createdDate: new Date().toString(), messages: [] }
     this.users.push(user)
-    return this.users
+    return user
   }
+
+  search(name: string) {
+    const regex = /a/; // Regular expression to match strings containing 'a'
+    const filteredUsers = this.users.filter(item => regex.test(item.name));
+    return filteredUsers
+  }
+
 }

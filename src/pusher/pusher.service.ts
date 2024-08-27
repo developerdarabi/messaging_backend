@@ -1,7 +1,7 @@
 // src/pusher.service.ts
 import { Injectable } from '@nestjs/common';
-import * as Pusher from 'pusher';
 import * as dotenv from 'dotenv';
+import * as Pusher from 'pusher';
 
 dotenv.config();
 
@@ -21,5 +21,13 @@ export class PusherService {
 
   trigger(channel: string, event: string, data: any) {
     return this.pusher.trigger(channel, event, data);
+  }
+  authenticate(sockerId: string, channel: string, user: any) {
+    return this.pusher.authenticate(sockerId, channel, {
+      user_id: user.id,
+      user_info: {
+        name: user.name
+      }
+    })
   }
 }

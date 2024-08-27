@@ -1,10 +1,10 @@
 // src/pusher.controller.ts
-import { Controller, Post, Body } from '@nestjs/common';
+import { Body, Controller, Post, Req } from '@nestjs/common';
 import { PusherService } from './pusher.service';
 
 @Controller('')
 export class PusherController {
-  constructor(private readonly pusherService: PusherService) {}
+  constructor(private readonly pusherService: PusherService) { }
 
   @Post('trigger')
   async triggerEvent(

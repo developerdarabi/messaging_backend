@@ -12,7 +12,13 @@ export class PusherController {
     @Body('event') event: string,
     @Body('data') data: any,
   ) {
-    await this.pusherService.trigger(channel, event, data);
+    try {
+      await this.pusherService.trigger(channel, event, data);
+      
+    } catch (error) {
+      console.log(error);
+      
+    }
     return { status: 'Event triggered' };
   }
 }

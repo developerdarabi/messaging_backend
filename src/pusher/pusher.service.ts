@@ -10,16 +10,16 @@ dotenv.config();
 export class PusherService {
   private pusher: Pusher;
 
-  private proxyIp = '142.54.231.38'
-  private proxyPort = '4145'
+  private proxyIp = '123.45.67.89'
+  private proxyPort = '8080'
   //@ts-ignore
   private proxyAgent = new HttpsProxyAgent({
     host: this.proxyIp,
     port: this.proxyPort
   })
-  
+
   constructor() {
-    
+
     this.pusher = new Pusher({
       appId: process.env.PUSHER_APP_ID,
       key: process.env.PUSHER_KEY,
@@ -35,12 +35,12 @@ export class PusherService {
   trigger(channel: string, event: string, data: any) {
     return this.pusher.trigger(channel, event, data);
   }
+
+  privateChat(userId: string, message: string) {
+    const channelName = `private-user-${userId}`
+    return this.pusher.trigger(channelName, 'new-message', message);
+  }
   authenticate(sockerId: string, channel: string, user: any) {
-    return this.pusher.authenticate(sockerId, channel, {
-      user_id: user.id,
-      user_info: {
-        name: user.name
-      }
-    })
+    return this.pusher.authenticate(sockerId, channel,{user_id:user.channel_name.split('-')[2]})
   }
 }

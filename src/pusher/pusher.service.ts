@@ -37,10 +37,10 @@ export class PusherService {
   }
 
   privateChat(userId: string, message: string) {
-    const channelName = `private-user-${userId}`
-    return this.pusher.trigger(channelName, 'new-message', message);
+    const channelName = `private-chat-${userId}`
+    return this.pusher.trigger(channelName, 'new-message', {message,userId});
   }
   authenticate(sockerId: string, channel: string, user: any) {
-    return this.pusher.authenticate(sockerId, channel,{user_id:user.channel_name.split('-')[2]})
+    return this.pusher.authenticate(sockerId, channel, { user_id: user.channel_name.split('-')[2] })
   }
 }

@@ -49,7 +49,8 @@ export class PusherController {
     try {
       //@ts-ignore
       const auth = this.pusherService.authenticate(Req.body.socket_id, Req.body.channel_name, { channel_name:Req.body.channel_name });
-      Res.send(auth)
+      
+      Res.status(200).send(auth)
     } catch (error) {
       console.log(error);
 

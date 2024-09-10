@@ -18,8 +18,8 @@ export class UsersService {
     return createdUser.save()
   }
 
-  login(name: string) {
-    const findedUser = this.userModel.findOne({ name })
+  async login(name: string) {
+    const findedUser = await this.userModel.findOne({ name })
     if (findedUser) return findedUser
     return this.create(name)
   }

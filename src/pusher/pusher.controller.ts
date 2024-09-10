@@ -31,9 +31,10 @@ export class PusherController {
   async privateChat(
     @Body('userId') userId: string,
     @Body('message') message: string,
+    @Body('date') date: string,
   ) {
     try {
-      await this.pusherService.privateChat(userId, message);
+      await this.pusherService.privateChat(userId, message,date);
 
     } catch (error) {
       console.log(error);

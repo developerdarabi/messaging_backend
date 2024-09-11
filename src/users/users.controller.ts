@@ -8,10 +8,25 @@ export class UsersController {
 
   @Post('')
   async loginUser(
-    @Body('name') name: string,
+    @Body('username') username: string,
+    @Body('password') password: string,
   ) {
-    const user = await this.userService.login(name);
-    return { user };
+    const findedUser = await this.userService.findUser(username);
+    if (findedUser) {
+      const isPasswordCorrect = await this.userService.checkPassword(username, password);
+      if (isPasswordCorrect) {
+        const signedInUser = await this.userService.signIn(username);
+        //@ts-ignore
+        return { user: { username: signedInUser.username, createdAt: signedInUser.createdAt, updatedAt: signedInUser.updatedAt, _id: signedInUser._id, channels: signedInUser.channels } }
+      }
+      else {
+        return { message: 'Password is not correct' }
+      }
+    }
+    const signedUpUser = await this.userService.signUp(username, password);
+    //@ts-ignore
+    return { user: { username: signedUpUser.username, createdAt: signedUpUser.createdAt, updatedAt: signedUpUser.updatedAt, _id: signedUpUser._id, channels: signedUpUser.channels } }
+
   }
   @Post('search')
   async searchUsers(

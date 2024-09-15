@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+import { Body, Controller, Delete, Headers, Param, Post, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -14,7 +14,7 @@ export class AuthController {
             // Ensure you are calling the method `validateUser`
             const user = await this.authService.validateUser(requestedUser, foundedUser);
             if (!user) {
-                return { message: 'Invalid credentials' };
+                throw new UnauthorizedException()
             }
             return this.authService.login(user);
         }
@@ -27,5 +27,12 @@ export class AuthController {
     async Logout(@Param('_id') _id: string) {
         this.authService.logout(_id)
         return { message: 'logouted successfully' }
+    }
+    @Post('info')
+    @UseGuards(JwtAuthGuard)
+    async userInfo(
+        @Headers('Authorization') authorization: string,
+    ) {
+        return this.authService.userInfo(authorization)
     }
 }

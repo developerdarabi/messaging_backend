@@ -8,12 +8,12 @@ import { User } from 'src/users/user.schema';
 @Injectable()
 export class AuthService {
     constructor(private jwtService: JwtService, @InjectModel(User.name) private userModel: Model<User>) { }
-    // Ensure validateUser is correctly defined as a method
+
     async validateUser(requestedUser, foundedUser): Promise<any> {
         const isMatch = await bcrypt.compare(requestedUser.password, foundedUser.password);
 
         if (isMatch) {
-            return foundedUser; // Return user details except password
+            return foundedUser;
         }
         return null;
     }
@@ -31,6 +31,7 @@ export class AuthService {
             }
         };
     }
+
     async signUp(username: string, password: string) {
         const saltOrRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltOrRounds);
@@ -44,5 +45,18 @@ export class AuthService {
 
     async findUser(username: string) {
         return this.userModel.findOne({ username })
+    }
+
+    async userInfo(userToken: string) {
+        const userId = await this.jwtService.decode(userToken.split(' ')[1])
+        const user = await this.userModel.findOne({ _id: userId })
+        return {
+            token: userToken,
+            user: {
+                user: user.username,
+                channels: user.channels,
+                _id: user._id
+            }
+        }
     }
 }

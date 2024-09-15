@@ -1,6 +1,7 @@
 // src/pusher.controller.ts
-import { Body, Controller, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PusherService } from './pusher.service';
 
 @Controller('pusher')
@@ -14,10 +15,6 @@ export class PusherController {
     @Body('data') data: any,
   ) {
     try {
-      console.log(channel);
-      console.log(event);
-      console.log(data);
-
       await this.pusherService.trigger(channel, event, data);
 
     } catch (error) {
@@ -34,7 +31,7 @@ export class PusherController {
     @Body('date') date: string,
   ) {
     try {
-      await this.pusherService.privateChat(userId, message,date);
+      await this.pusherService.privateChat(userId, message, date);
 
     } catch (error) {
       console.log(error);
@@ -43,14 +40,15 @@ export class PusherController {
     return { status: 'Message sent' };
   }
   @Post('auth')
+  @UseGuards(JwtAuthGuard)
   async authenticate(
     @Req() Req: Request,
     @Res() Res: Response
   ) {
     try {
       //@ts-ignore
-      const auth = this.pusherService.authenticate(Req.body.socket_id, Req.body.channel_name, { channel_name:Req.body.channel_name });
-      
+      const auth = this.pusherService.authenticate(Req.body.socket_id, Req.body.channel_name, { channel_name: Req.body.channel_name });
+
       Res.status(200).send(auth)
     } catch (error) {
       console.log(error);

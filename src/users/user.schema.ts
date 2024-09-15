@@ -12,6 +12,9 @@ export class User extends Document {
     @Prop({ default: [] })
     channels: String[]
 
+    @Prop({ default: null })
+    token: String
+
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)

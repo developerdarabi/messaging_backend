@@ -37,7 +37,7 @@ export class PusherService {
   }
 
   privateChat(userId: string, message: string, date: string) {
-    const channelName = `private-chat-${userId}`
+    const channelName = `private-notifications-${userId}`
     return this.pusher.trigger(channelName, 'new-message', { message, userId, date });
   }
   authenticate(sockerId: string, channel: string, user: any) {

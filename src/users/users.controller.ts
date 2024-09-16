@@ -13,9 +13,9 @@ export class UsersController {
 
   @Post('search')
   async searchUsers(
-    @Body('name') name: string,
+    @Body('username') username: string,
   ) {
-    const users = await this.userService.search(name);
+    const users = await this.userService.search(username);
     return { users };
   }
 

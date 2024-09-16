@@ -25,6 +25,7 @@ export class PusherController {
   }
 
   @Post('private')
+  @UseGuards(JwtAuthGuard)
   async privateChat(
     @Body('userId') userId: string,
     @Body('message') message: string,

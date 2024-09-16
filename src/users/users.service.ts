@@ -1,7 +1,6 @@
 // src/pusher.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import * as bcrypt from 'bcrypt';
 import * as dotenv from 'dotenv';
 import { Model } from 'mongoose';
 import { User } from './user.schema';
@@ -18,4 +17,12 @@ export class UsersService {
     const foundedUser = this.userModel.find({ username: { $regex: username } })
     return foundedUser
   }
+
+  addChannelToUser(userId, channelName) {
+    return this.userModel.updateOne(
+      { _id: userId, channels: { $ne: channelName } },
+      { $addToSet: { channels: channelName } }
+    )
+  }
+
 }

@@ -2,11 +2,12 @@
 import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UsersService } from 'src/users/users.service';
 import { PusherService } from './pusher.service';
 
 @Controller('pusher')
 export class PusherController {
-  constructor(private readonly pusherService: PusherService) { }
+  constructor(private readonly pusherService: PusherService, private readonly usersService: UsersService) { }
 
   @Post('trigger')
   async triggerEvent(
@@ -30,9 +31,20 @@ export class PusherController {
     @Body('userId') userId: string,
     @Body('message') message: string,
     @Body('date') date: string,
+    @Req() req:any
   ) {
+    console.log(req.user);
+    const user = req.user
+    const channelName = `private_chat_${user._id}_${userId}`
     try {
-      await this.pusherService.privateChat(userId, message, date);
+      console.log(channelName);
+      console.log(user);
+      
+      //@ts-ignore
+      await this.usersService.addChannelToUser(user._id,channelName)
+      //@ts-ignore
+      // this.usersService.addMessageToUserChannels(user._id,channelName)
+      // await this.pusherService.privateChat(userId, message, date);
 
     } catch (error) {
       console.log(error);

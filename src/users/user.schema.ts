@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 
 @Schema({ timestamps: true })
 export class User extends Document {
@@ -10,7 +10,7 @@ export class User extends Document {
     password: String
 
     @Prop({ default: [] })
-    channels: String[]
+    channels: [{ type: Types.ObjectId, ref: 'Channel' }]
 
     @Prop({ default: null })
     token: String

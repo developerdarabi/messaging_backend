@@ -2,11 +2,13 @@
 import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { ChannelsService } from 'src/channels/channel.service';
+import { UsersService } from 'src/users/users.service';
 import { PusherService } from './pusher.service';
 
 @Controller('pusher')
 export class PusherController {
-  constructor(private readonly pusherService: PusherService) { }
+  constructor(private readonly pusherService: PusherService, private readonly usersService: UsersService, private readonly channelsService: ChannelsService) { }
 
   @Post('trigger')
   async triggerEvent(
@@ -30,12 +32,19 @@ export class PusherController {
     @Body('userId') userId: string,
     @Body('message') message: string,
     @Body('date') date: string,
+    @Req() req: any
   ) {
     try {
-      await this.pusherService.privateChat(userId, message, date);
-
+      const user = req.user
+      const channelId = `presence-pv-${user._id}-${userId}`
+      const createdChannel = await this.channelsService.addToChannel(channelId, user._id, message)
+      await this.usersService.addToChannels(user._id, createdChannel._id)
+      await this.usersService.addToChannels(userId, createdChannel._id)
+      await this.pusherService.notifUser(userId, { message: createdChannel.messages[createdChannel.messages.length - 1], channelId });
+      await this.pusherService.privateChat(channelId, { message: createdChannel.messages[createdChannel.messages.length - 1], channelId });
     } catch (error) {
       console.log(error);
+      console.log('error');
 
     }
     return { status: 'Message sent' };

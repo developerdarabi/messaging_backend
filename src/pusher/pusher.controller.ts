@@ -5,6 +5,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ChannelsService } from 'src/channels/channel.service';
 import { UsersService } from 'src/users/users.service';
 import { PusherService } from './pusher.service';
+import { generatePvChatName } from 'src/utils';
 
 @Controller('pusher')
 export class PusherController {
@@ -36,7 +37,7 @@ export class PusherController {
   ) {
     try {
       const user = req.user
-      const channelId = `presence-pv-${user._id}-${userId}`
+      const channelId = `presence-pv-${generatePvChatName(user._id,userId)}`
       const createdChannel = await this.channelsService.addToChannel(channelId, user._id, message)
       await this.usersService.addToChannels(user._id, createdChannel._id)
       await this.usersService.addToChannels(userId, createdChannel._id)

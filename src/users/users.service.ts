@@ -14,8 +14,8 @@ export class UsersService {
 
   constructor(@InjectModel(User.name) private userModel: Model<User>, @InjectModel(Channel.name) private channelModel: Model<Channel>) { }
 
-  search(username: string) {
-    const foundedUser = this.userModel.find({ username: { $regex: username } })
+  search(userId: string, username: string) {
+    const foundedUser = this.userModel.find({ _id: { $ne: userId }, username: { $regex: username } })
     return foundedUser
   }
 

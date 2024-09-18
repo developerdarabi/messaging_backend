@@ -44,6 +44,6 @@ export class PusherService {
     return this.pusher.trigger(channelName, 'new-message', payload);
   }
   authenticate(sockerId: string, channel: string, user: any) {
-    return this.pusher.authenticate(sockerId, channel, { user_id: user.channel_name.split('-')[2] })
+    return this.pusher.authenticate(sockerId, channel, user)
   }
 }

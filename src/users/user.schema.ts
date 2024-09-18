@@ -9,8 +9,8 @@ export class User extends Document {
     @Prop({ required: true })
     password: String
 
-    @Prop({ default: [] })
-    channels: [{ type: Types.ObjectId, ref: 'Channel' }]
+    @Prop({ type: [Types.ObjectId], ref: 'Channel', default: [] })  // Array of ObjectId
+    channels: Types.ObjectId[];
 
     @Prop({ default: null })
     token: String

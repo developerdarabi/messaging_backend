@@ -76,7 +76,7 @@ export class AuthService {
 
         return {
             token: userToken.split(' ')[1],
-            user
+            user:user[0]
         }
     }
 }

@@ -32,7 +32,7 @@ export class PusherController {
   async privateChat(
     @Body('userId') userId: string,
     @Body('message') message: string,
-    @Body('date') date: string,
+    @Body('channelId') channelId: string,
     @Req() req: any
   ) {
     console.log(req.user);
@@ -40,7 +40,6 @@ export class PusherController {
     const channelName = `private_chat_${user._id}_${userId}`
     try {
       const user = req.user
-      const channelId = `presence-pv-${generatePvChatName(user._id,userId)}`
       const createdChannel = await this.channelsService.addToChannel(channelId, user._id, message)
       await this.usersService.addToChannels(user._id, createdChannel._id)
       await this.usersService.addToChannels(userId, createdChannel._id)

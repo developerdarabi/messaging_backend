@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Headers, Param, Post, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Headers, Param, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
@@ -32,7 +32,8 @@ export class AuthController {
     @UseGuards(JwtAuthGuard)
     async userInfo(
         @Headers('Authorization') authorization: string,
+        @Req() req:any
     ) {
-        return this.authService.userInfo(authorization)
+        return this.authService.userInfo(req.user._id,authorization)
     }
 }

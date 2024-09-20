@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcryptjs';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { User } from 'src/users/user.schema';
+const ObjectId = mongoose.Types.ObjectId;
 
 @Injectable()
 export class AuthService {
@@ -47,16 +48,35 @@ export class AuthService {
         return this.userModel.findOne({ username })
     }
 
-    async userInfo(userToken: string) {
-        const userId = await this.jwtService.decode(userToken.split(' ')[1])
-        const user = await this.userModel.findOne({ _id: userId })
-        return {
-            token: userToken,
-            user: {
-                user: user.username,
-                channels: user.channels,
-                _id: user._id
+    async userInfo(userId, userToken: string) {
+        console.log(userId);
+
+        const user = await this.userModel.aggregate([
+            {
+                $match: { _id: new ObjectId(userId) }  // Match specific user by ObjectId
+            },
+            {
+                $lookup: {
+                    from: 'channels',  
+                    localField: 'channels', 
+                    foreignField: '_id', 
+                    as: 'channels'
+                }
+            },
+            {
+                $project: {
+                    'channels._id': 1, 
+                    'channels.channelId': 1,
+                    username: 1, 
+                    createdAt: 1, 
+                    updatedAt: 1,
+                }
             }
+        ]).exec();
+
+        return {
+            token: userToken.split(' ')[1],
+            user:user[0]
         }
     }
 }

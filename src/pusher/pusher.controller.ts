@@ -4,8 +4,8 @@ import { Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ChannelsService } from 'src/channels/channel.service';
 import { UsersService } from 'src/users/users.service';
-import { PusherService } from './pusher.service';
 import { generatePvChatName } from 'src/utils';
+import { PusherService } from './pusher.service';
 
 @Controller('pusher')
 export class PusherController {
@@ -60,7 +60,17 @@ export class PusherController {
   ) {
     try {
       //@ts-ignore
-      const auth = this.pusherService.authenticate(Req.body.socket_id, Req.body.channel_name, { channel_name: Req.body.channel_name });
+      const user = {
+        //@ts-ignore
+        user_id: Req.user._id,
+        //@ts-ignore
+        user_info: { username: Req.user.username },
+        //@ts-ignore
+        channel_name: Req.body.channel_name
+      }
+      
+      //@ts-ignore
+      const auth = this.pusherService.authenticate(Req.body.socket_id, Req.body.channel_name,user);
 
       Res.status(200).send(auth)
     } catch (error) {

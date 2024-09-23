@@ -3,13 +3,14 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
+import { ChannelsController } from './channels/channel.controller';
 import { Channel, ChannelSchema } from './channels/channel.schema';
+import { ChannelsService } from './channels/channel.service';
 import { PusherController } from './pusher/pusher.controller';
 import { PusherService } from './pusher/pusher.service';
 import { User, UserSchema } from './users/user.schema';
 import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
-import { ChannelsService } from './channels/channel.service';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { ChannelsService } from './channels/channel.service';
     ]),
     AuthModule,
   ],
-  controllers: [PusherController, UsersController, AuthController],
-  providers: [PusherService, UsersService,ChannelsService],
+  controllers: [PusherController, UsersController, AuthController, ChannelsController],
+  providers: [PusherService, UsersService, ChannelsService],
 })
 export class AppModule { }

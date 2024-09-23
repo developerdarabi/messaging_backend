@@ -13,21 +13,34 @@ export class ChannelsService {
 
   constructor(@InjectModel(Channel.name) private channelModel: Model<Channel>) { }
 
-  async addToChannel(channelId, authorId,message) {
+  async addMessageToChannel(channelId, authorId, message) {
     let channel = await this.channelModel.findOne({ channelId: channelId });
-
-    if (channel) {
-      // If channel exists, add the message
-      //@ts-ignore
-      channel.messages.push({author:authorId,text:message});
-      return channel.save(); // Save the updated channel
-    } else {
-      // If channel does not exist, create it and add the message
+    //@ts-ignore
+    channel.messages.push({ author: authorId, text: message });
+    return channel.save();
+  }
+  async createChannel(channelId: string, users: string[]) {
+    let channel = await this.channelModel.findOne({ channelId: channelId });
+    if (!channel) {
       const newChannel = new this.channelModel({
         channelId: channelId,
-        messages: [{author:authorId,text:message}],
+        users
       });
-      return newChannel.save(); // Save the new channel
+      return newChannel.save();
     }
+    else {
+      return channel
+    }
+  }
+  async getChannelMessages(channelId: string) {
+    return this.channelModel.findOne({ channelId }).populate({
+      path: 'users',  // Populate channels field
+      select: '_id username',
+      // populate: {
+      //     path: 'users',  // Populate users field within each channel
+      //     model: 'User',   // Specify the model for users
+      //     // select: '_id username',
+      // }
+    }).select('channelId createdAt updatedAt messages users _id')
   }
 }

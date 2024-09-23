@@ -12,7 +12,7 @@ export class Channel extends Document {
     messages: typeof MessageSchema[];
 
     @Prop({ type: [Types.ObjectId], ref: 'User', default: [] })  // Array of ObjectId
-    channels: Types.ObjectId[];
+    users: Types.ObjectId[];
 
 }
 

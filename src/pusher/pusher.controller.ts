@@ -27,6 +27,17 @@ export class PusherController {
     return { status: 'Event triggered' };
   }
 
+  @Post('startChat')
+  async startChat(
+    @Body('users') users: string[],
+  ) {
+    const channelId = `presence-chat-${generatePvChatName(users[0],users[1])}`
+    const createdChannel =  await this.channelsService.createChannel(channelId,users)
+    await this.usersService.addToChannels(users[0], createdChannel._id)
+    await this.usersService.addToChannels(users[1], createdChannel._id)
+    return createdChannel
+  }
+
   @Post('private')
   @UseGuards(JwtAuthGuard)
   async privateChat(
@@ -37,12 +48,10 @@ export class PusherController {
   ) {
     console.log(req.user);
     const user = req.user
-    const channelName = `private_chat_${user._id}_${userId}`
     try {
-      const user = req.user
-      const createdChannel = await this.channelsService.addToChannel(channelId, user._id, message)
-      await this.usersService.addToChannels(user._id, createdChannel._id)
-      await this.usersService.addToChannels(userId, createdChannel._id)
+      const createdChannel = await this.channelsService.addMessageToChannel(channelId, user._id, message)
+      // await this.usersService.addToChannels(user._id, createdChannel._id)
+      // await this.usersService.addToChannels(userId, createdChannel._id)
       await this.pusherService.notifUser(userId, { message: createdChannel.messages[createdChannel.messages.length - 1], channelId });
       await this.pusherService.privateChat(channelId, { message: createdChannel.messages[createdChannel.messages.length - 1], channelId });
     } catch (error) {

@@ -49,34 +49,22 @@ export class AuthService {
     }
 
     async userInfo(userId, userToken: string) {
-        console.log(userId);
 
-        const user = await this.userModel.aggregate([
-            {
-                $match: { _id: new ObjectId(userId) }  // Match specific user by ObjectId
-            },
-            {
-                $lookup: {
-                    from: 'channels',  
-                    localField: 'channels', 
-                    foreignField: '_id', 
-                    as: 'channels'
-                }
-            },
-            {
-                $project: {
-                    'channels._id': 1, 
-                    'channels.channelId': 1,
-                    username: 1, 
-                    createdAt: 1, 
-                    updatedAt: 1,
-                }
+        const user = await this.userModel.findById(userId).populate({
+            path: 'channels',  // Populate channels field
+            select: '_id users channelId',
+            populate: {
+                path: 'users',  // Populate users field within each channel
+                model: 'User',   // Specify the model for users
+                select: '_id username',
+                match: { _id: { $ne: userId } } 
             }
-        ]).exec();
+        }).select('channels  updatedAt createdAt  username')
+        console.log(user);
 
         return {
             token: userToken.split(' ')[1],
-            user:user[0]
+            user: user
         }
     }
 }
